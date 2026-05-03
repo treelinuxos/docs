@@ -50,15 +50,29 @@ include desktop.prc
 
 ## Commands
 
+### Main Commands
 - `sprout apply` - apply system.prc to live system
 - `sprout apply --non-interactive` - apply without prompts
 - `sprout diff` - show differences between config and system
 - `sprout status` - show system status
-- `sprout backup list` - list available backups
-- `sprout backup rollback` - rollback to previous state
-- `sprout search <query>` - search for packages
+
+### Package Management
 - `sprout install <pkg>` - install a package
 - `sprout remove <pkg>` - remove a package
+- `sprout search <query>` - search for packages
+- `sprout upgrade` - upgrade all packages
+- `sprout update` - update package index
+
+### Module Commands
+- `sprout run <module.smp>` - run a .smp module manually
+
+### Backup Commands
+- `sprout backup list` - list available backups
+- `sprout backup rollback` - rollback to previous state
+
+### User Commands
+- `sprout user <username> add <pkg>` - add package to user config
+- `sprout user <username> remove <pkg>` - remove package from user config
 
 ## .smp Modules
 
@@ -77,6 +91,8 @@ sprout_lib.info("Done!")
 
 ### sprout_lib API
 
+The `sprout_lib` module is available at `/usr/lib/sprout_lib/__init__.py`.
+
 - `info(msg)` - log info message
 - `warn(msg)` - log warning message
 - `error(msg)` - log error message
@@ -87,6 +103,8 @@ sprout_lib.info("Done!")
 - `service_enable(svc)` - enable service
 
 ### Available Modules
+
+Modules are stored in `/etc/treelinux/modules/`.
 
 - `update-sprout.smp` - updates sprout from GitHub
 - `nvidia.smp` - detects and configures NVIDIA drivers
@@ -123,6 +141,15 @@ services
 
 Included files are merged - all packages and services are combined.
 
+## How It Works
+
+1. `sprout apply` reads `system.prc` and all included `.prc` files
+2. Parses the config into a structured dict
+3. Compares desired state vs actual system (installed packages, enabled services)
+4. Installs missing packages, prompts to remove extras
+5. Runs `.smp` modules specified in the config
+6. Backs up `/etc/treelinux/` before making changes
+
 ## Installation
 
 ```bash
@@ -139,4 +166,4 @@ pip install -e .
 
 ## License
 
-MIT
+GPLv3 - see LICENSE file.

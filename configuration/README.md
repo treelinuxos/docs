@@ -62,7 +62,7 @@ This will create symlinks in `/etc/runit/runsvdir/default/`.
 
 ## Modules
 
-Modules are Python scripts that run at apply time. They're stored in `/etc/treelinux/modules/`.
+Modules are Python scripts (`.smp`) that run at apply time. They're stored in `/etc/treelinux/modules/` and use `sprout_lib` (at `/usr/lib/sprout_lib/`).
 
 ### Example Module
 
@@ -73,6 +73,12 @@ import sprout_lib
 sprout_lib.info("Configuring nvidia drivers...")
 # custom logic here
 ```
+
+Available modules:
+- `update-sprout.smp` - updates sprout from GitHub
+- `nvidia.smp`, `amd.smp` - driver detection
+- `i3.smp`, `hyprland.smp`, `sway.smp` - window managers
+- `xfce.smp`, `gnome.smp`, `kde.smp` - desktop environments
 
 ## Includes
 
@@ -121,3 +127,5 @@ Rollback to previous state:
 ```bash
 sprout backup rollback
 ```
+
+Backups are stored in `/var/treelinux/backups/`.
