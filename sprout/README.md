@@ -42,8 +42,8 @@ services
 	sshd
 
 modules
-	update-sprout.smp
-	nvidia.smp
+	software/update-sprout.smp
+	software/fastfetch.smp
 
 include desktop.prc
 ```
@@ -54,6 +54,9 @@ include desktop.prc
 - `sprout apply` - apply system.prc to live system
 - `sprout apply --non-interactive` - apply without prompts
 - `sprout diff` - show differences between config and system
+- `sprout list` - list packages and services from config (including includes)
+- `sprout list modules` - list all available .smp modules
+- `sprout modules` - download/update modules from GitHub
 - `sprout status` - show system status
 
 ### Package Management
@@ -104,17 +107,11 @@ The `sprout_lib` module is available at `/usr/lib/sprout_lib/__init__.py`.
 
 ### Available Modules
 
-Modules are stored in `/etc/treelinux/modules/`.
+Modules are stored in `/etc/treelinux/modules/` and organized by category.
 
-- `update-sprout.smp` - updates sprout from GitHub
-- `nvidia.smp` - detects and configures NVIDIA drivers
-- `amd.smp` - detects and configures AMD drivers
-- `sway.smp` - configures Sway Wayland compositor
-- `i3.smp` - configures i3 window manager
-- `hyprland.smp` - configures Hyprland compositor
-- `xfce.smp` - configures XFCE desktop
-- `gnome.smp` - configures GNOME desktop
-- `kde.smp` - configures KDE Plasma desktop
+- `software/update-sprout.smp` - updates sprout from GitHub
+- `software/fastfetch.smp` - installs Treelinux ASCII logo for fastfetch
+- `software/sway.smp` - configures Sway Wayland compositor
 
 ## Include Directive
 
@@ -150,60 +147,19 @@ Included files are merged - all packages and services are combined.
 5. Runs `.smp` modules specified in the config
 6. Backs up `/etc/treelinux/` before making changes
 
-## Custom Logo
-
-Treelinux includes a custom ASCII art logo for fastfetch.
-
 ### Using the Treelinux Logo
 
-The logo is included at `/etc/treelinux/treelinux_logo.txt` (or `/usr/lib/sprout/treelinux_logo.txt` if installed via pip).
+Run the fastfetch module to automatically install the logo and configure fastfetch:
 
-1. **Copy the logo** to your system:
-   ```bash
-   cp /etc/treelinux/treelinux_logo.txt /tmp/treelinux_logo.txt
-   ```
+```bash
+sprout run software/fastfetch.smp
+```
 
-2. **Create fastfetch config**:
-   ```bash
-   mkdir -p ~/.config/fastfetch
-   cat > ~/.config/fastfetch/config.jsonc << 'EOF'
-   {
-       "logo": {
-           "type": "file-raw",
-           "source": "/etc/treelinux/treelinux_logo.txt",
-           "width": 30,
-           "height": 15,
-           "padding": {
-               "top": 0,
-               "left": 0
-           }
-       },
-       "modules": [
-           "title",
-           "separator",
-           "os",
-           "host",
-           "kernel",
-           "uptime",
-           "packages",
-           "shell",
-           "terminal",
-           "cpu",
-           "memory",
-           "disk",
-           "localip",
-           "locale",
-           "break",
-           "colors"
-       ]
-   }
-   EOF'
-   ```
+Or apply your config if it includes the module:
 
-3. **Run fastfetch**:
-   ```bash
-   fastfetch
-   ```
+```bash
+sprout apply
+```
 
 ### Creating Your Own Logo
 
