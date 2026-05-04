@@ -150,19 +150,98 @@ Included files are merged - all packages and services are combined.
 5. Runs `.smp` modules specified in the config
 6. Backs up `/etc/treelinux/` before making changes
 
-## Installation
+## Custom Logo
 
-```bash
-pip install sprout
-```
+Treelinux includes a custom ASCII art logo for fastfetch.
 
-Or from source:
+### Using the Treelinux Logo
 
-```bash
-git clone https://github.com/treelinuxos/sprout.git
-cd sprout
-pip install -e .
-```
+The logo is included at `/etc/treelinux/treelinux_logo.txt` (or `/usr/lib/sprout/treelinux_logo.txt` if installed via pip).
+
+1. **Copy the logo** to your system:
+   ```bash
+   cp /etc/treelinux/treelinux_logo.txt /tmp/treelinux_logo.txt
+   ```
+
+2. **Create fastfetch config**:
+   ```bash
+   mkdir -p ~/.config/fastfetch
+   cat > ~/.config/fastfetch/config.jsonc << 'EOF'
+   {
+       "logo": {
+           "type": "file-raw",
+           "source": "/etc/treelinux/treelinux_logo.txt",
+           "width": 30,
+           "height": 15,
+           "padding": {
+               "top": 0,
+               "left": 0
+           }
+       },
+       "modules": [
+           "title",
+           "separator",
+           "os",
+           "host",
+           "kernel",
+           "uptime",
+           "packages",
+           "shell",
+           "terminal",
+           "cpu",
+           "memory",
+           "disk",
+           "localip",
+           "locale",
+           "break",
+           "colors"
+       ]
+   }
+   EOF'
+   ```
+
+3. **Run fastfetch**:
+   ```bash
+   fastfetch
+   ```
+
+### Creating Your Own Logo
+
+Use any image and convert it to ASCII art:
+
+1. **Install conversion tool**:
+   ```bash
+   # On Alpine
+   # (jp2a isn't available, use Python instead)
+   
+   # On Fedora/Ubuntu
+   dnf install jp2a  # or apt install jp2a
+   ```
+
+2. **Convert image to ASCII**:
+   ```bash
+   # Using Python (works anywhere)
+   python3 << 'EOF'
+   from PIL import Image
+   chars = r'$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,"^`\'. '
+   img = Image.open('your-image.png').convert('L').resize((30, 15))
+   pixels = list(img.getdata())
+   for i in range(0, len(pixels), img.width):
+       print(''.join(chars[int(p/255 * (len(chars)-1)] for p in pixels[i:i+img.width]))
+   EOF'
+   
+   # Or using jp2a
+   jp2a your-image.png -w 30 -h 15 > treelinux_logo.txt
+   ```
+
+3. **Use your logo**:
+   ```bash
+   # Test it
+   cat treelinux_logo.txt | fastfetch --raw - --logo-width 30 --logo-height 15
+   
+   # Add to config
+   # (edit ~/.config/fastfetch/config.jsonc as shown above)
+   ```
 
 ## License
 
